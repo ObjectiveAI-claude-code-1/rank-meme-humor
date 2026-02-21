@@ -1,0 +1,101 @@
+{
+  "type": "vector.function",
+  "output_length": {
+    "$starlark": "len(input)"
+  },
+  "input_split": {
+    "$starlark": "[[meme] for meme in input]"
+  },
+  "input_merge": {
+    "$starlark": "[meme for group in input for meme in group]"
+  },
+  "input_schema": {
+    "type": "array",
+    "description": "An array of memes to rank by humor. Each meme can be an image or text.",
+    "minItems": 2,
+    "items": {
+      "anyOf": [
+        {
+          "type": "image",
+          "description": "A meme as an image."
+        },
+        {
+          "type": "string",
+          "description": "A meme as text."
+        }
+      ]
+    }
+  },
+  "tasks": [
+    {
+      "type": "vector.completion",
+      "messages": [
+        {
+          "role": "user",
+          "content": [
+            {
+              "type": "text",
+              "text": "Show me a meme that will completely catch me off guard. I want something with a twist I absolutely did not see coming — the kind of meme that subverts my expectations and makes me laugh because I was totally blindsided by where it went."
+            }
+          ]
+        }
+      ],
+      "responses": {
+        "$starlark": "[[{\"type\": \"text\", \"text\": meme}] if type(meme) == \"string\" else [meme] for meme in input]"
+      },
+      "output": {
+        "$starlark": "output[\"scores\"]"
+      }
+    },
+    {
+      "type": "vector.completion",
+      "messages": [
+        {
+          "role": "user",
+          "content": [
+            {
+              "type": "text",
+              "text": "I'm tired of low-effort memes. Send me something genuinely clever — a meme where the humor comes from an intelligent juxtaposition, a layered reference, or a construction so well-crafted that I admire how the joke was built, not just that it made me laugh."
+            }
+          ]
+        }
+      ],
+      "responses": {
+        "$starlark": "[[{\"type\": \"text\", \"text\": meme}] if type(meme) == \"string\" else [meme] for meme in input]"
+      },
+      "output": {
+        "$starlark": "output[\"scores\"]"
+      }
+    },
+    {
+      "type": "vector.completion",
+      "messages": [
+        {
+          "role": "system",
+          "content": [
+            {
+              "type": "text",
+              "text": "You are a meme curator who values precision and restraint above all else. The best memes are those where every element is essential — nothing is wasted, nothing is over-explained. You favor memes that trust their audience and land their joke with surgical efficiency. A meme that uses three panels where two would suffice, or adds a caption restating what the image already conveys, is a meme that has failed at its craft."
+            }
+          ]
+        },
+        {
+          "role": "user",
+          "content": [
+            {
+              "type": "text",
+              "text": "Show me a perfectly crafted meme. Nothing bloated, nothing redundant — just pure, lean, efficient comedy that lands on the first read."
+            }
+          ]
+        }
+      ],
+      "responses": {
+        "$starlark": "[[{\"type\": \"text\", \"text\": meme}] if type(meme) == \"string\" else [meme] for meme in input]"
+      },
+      "output": {
+        "$starlark": "output[\"scores\"]"
+      }
+    }
+  ],
+  "description": "Ranks memes by humor across three dimensions: comic surprise (how well the meme subverts expectations), cleverness (the ingenuity of its comedic construction), and economy of delivery (how cleanly it lands without over-explanation). Accepts memes as images or text and scores them so funnier memes rank higher."
+}
